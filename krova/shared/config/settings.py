@@ -58,28 +58,37 @@ class Settings(BaseSettings):
     skip_ssl_verify: bool = Field(default=False, alias="SKIP_SSL_VERIFY")
 
     # ── Meta (WhatsApp + Instagram) ──────────────────────────────────────────
-    meta_app_id: str = Field(alias="META_APP_ID")
-    meta_app_secret: str = Field(alias="META_APP_SECRET")
-    # Random string chosen by us — Meta sends this back when verifying webhook
-    meta_webhook_verify_token: str = Field(alias="META_WEBHOOK_VERIFY_TOKEN")
+    # Optional — only required if you wire up WhatsApp/Instagram webhooks.
+    meta_app_id: str = Field(default="", alias="META_APP_ID")
+    meta_app_secret: str = Field(default="", alias="META_APP_SECRET")
+    meta_webhook_verify_token: str = Field(default="", alias="META_WEBHOOK_VERIFY_TOKEN")
     meta_api_version: str = Field(default="v18.0", alias="META_API_VERSION")
 
     # ── Google (Gmail) ───────────────────────────────────────────────────────
-    google_client_id: str = Field(alias="GOOGLE_CLIENT_ID")
-    google_client_secret: str = Field(alias="GOOGLE_CLIENT_SECRET")
-    google_redirect_uri: str = Field(alias="GOOGLE_REDIRECT_URI")
-    google_pubsub_topic: str = Field(alias="GOOGLE_PUBSUB_TOPIC")
+    # Optional — only required if you wire up Gmail OAuth.
+    google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
+    google_client_secret: str = Field(default="", alias="GOOGLE_CLIENT_SECRET")
+    google_redirect_uri: str = Field(default="", alias="GOOGLE_REDIRECT_URI")
+    google_pubsub_topic: str = Field(default="", alias="GOOGLE_PUBSUB_TOPIC")
 
     # ── Microsoft (Outlook) ──────────────────────────────────────────────────
-    microsoft_client_id: str = Field(alias="MICROSOFT_CLIENT_ID")
-    microsoft_client_secret: str = Field(alias="MICROSOFT_CLIENT_SECRET")
-    microsoft_redirect_uri: str = Field(alias="MICROSOFT_REDIRECT_URI")
+    # Optional — only required if you wire up Outlook OAuth.
+    microsoft_client_id: str = Field(default="", alias="MICROSOFT_CLIENT_ID")
+    microsoft_client_secret: str = Field(default="", alias="MICROSOFT_CLIENT_SECRET")
+    microsoft_redirect_uri: str = Field(default="", alias="MICROSOFT_REDIRECT_URI")
     microsoft_tenant_id: str = Field(default="common", alias="MICROSOFT_TENANT_ID")
 
     # ── Security ─────────────────────────────────────────────────────────────
-    # Fernet key for encrypting API tokens stored in the database
-    encryption_key: str = Field(alias="ENCRYPTION_KEY")
-    jwt_secret: str = Field(alias="JWT_SECRET")
+    # Fernet key for encrypting API tokens. Auto-generated for dev if missing.
+    encryption_key: str = Field(
+        default="dev-key-replace-in-production-with-fernet-generate",
+        alias="ENCRYPTION_KEY",
+    )
+    # JWT signing — we use Supabase JWTs primarily, this is a fallback secret.
+    jwt_secret: str = Field(
+        default="dev-secret-replace-in-production",
+        alias="JWT_SECRET",
+    )
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
     # 7 days — owner stays logged in on mobile
     jwt_expiry_minutes: int = Field(default=10_080, alias="JWT_EXPIRY_MINUTES")
