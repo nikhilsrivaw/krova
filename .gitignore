@@ -1,9 +1,13 @@
-# ─── Secrets — NEVER commit these ──────────────────────────────────────────
+# ─── Markdown docs — kept local only ───────────────────────────────────────
+*.md
+
+# ─── Env files — NEVER commit secrets ──────────────────────────────────────
 .env
-.env.local
-.env.development.local
-.env.production.local
-.env.*.local
+.env.*
+*.env
+*.env.*
+
+# ─── Other secrets ─────────────────────────────────────────────────────────
 *.pem
 *.key
 *-credentials.json
@@ -72,7 +76,5 @@ temp/
 .tmp/
 
 # ─── KROVA-specific local-only ─────────────────────────────────────────────
-# Anything that should stay on your machine — local DB dumps, scratch files
 .scratch/
 .local/
-*.local.md
