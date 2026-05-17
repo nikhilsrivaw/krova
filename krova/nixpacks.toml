@@ -1,0 +1,9 @@
+# Railway / Nixpacks build config for KROVA backend.
+# We regenerate poetry.lock inside the build container so local lock drift
+# doesn't block deploys. Lock generation happens on Linux where SSL is fine.
+
+[phases.install]
+cmds = [
+  "poetry lock",
+  "poetry install --no-interaction --no-ansi --only main --no-root",
+]
