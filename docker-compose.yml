@@ -1,0 +1,7 @@
+version: '3.9'
+
+# Root-level shortcut — delegates to the real compose file inside krova/
+# Usage from repo root: docker compose up
+
+include:
+  - path: krova/infrastructure/docker/docker-compose.yml

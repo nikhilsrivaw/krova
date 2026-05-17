@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: krova
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pip install poetry==1.8.3
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ hashFiles('krova/pyproject.toml') }}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Lint with flake8
+        run: poetry run flake8 shared/ services/ --max-line-length=100 --extend-ignore=E203,W503
+
+      - name: Type check with mypy
+        run: poetry run mypy shared/ services/ --ignore-missing-imports
+        continue-on-error: true  # Warn but don't fail CI on type errors yet
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/krova_test
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: test
+          JWT_SECRET: test_secret_not_for_production
+          ENCRYPTION_KEY: dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=
+          ANTHROPIC_API_KEY: sk-ant-test
+          SUPABASE_URL: https://test.supabase.co
+          SUPABASE_ANON_KEY: test
+          SUPABASE_SERVICE_KEY: test
+        run: poetry run pytest tests/ -v --cov=shared --cov=services --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: krova/coverage.xml
+        continue-on-error: true

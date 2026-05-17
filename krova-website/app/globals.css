@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  --color-os-bg: #0A0A0A;
+  --color-os-card: #121212;
+  --color-os-border: #222222;
+  --color-os-border-bright: #333333;
+  --color-os-text-dim: #888888;
+  --color-os-accent: #FFFFFF;
+  --color-os-accent-dim: #AAAAAA;
+
+  --color-brand-primary: #FFFFFF;
+  --color-brand-secondary: #00D4A8;
+
+  --color-aurora-1: #5EEAD4;
+  --color-aurora-2: #A78BFA;
+  --color-aurora-3: #FB7185;
+  --color-aurora-4: #FCD34D;
+
+  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-aurora: aurora 8s linear infinite;
+  --animate-marquee: marquee var(--duration) linear infinite;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-gradient: gradient 8s linear infinite;
+  --animate-meteor: meteor 5s linear infinite;
+  --animate-grid: grid-move 20s linear infinite;
+  --animate-orbit: orbit calc(var(--duration) * 1s) linear infinite;
+  --animate-shiny-text: shiny-text 8s infinite;
+
+  @keyframes border-beam {
+    100% { offset-distance: 100%; }
+  }
+  @keyframes shimmer-slide {
+    to { transform: translate(calc(100cqw - 100%), 0); }
+  }
+  @keyframes spin-around {
+    0% { transform: translateZ(0) rotate(0); }
+    15%, 35% { transform: translateZ(0) rotate(90deg); }
+    65%, 85% { transform: translateZ(0) rotate(270deg); }
+    100% { transform: translateZ(0) rotate(360deg); }
+  }
+  @keyframes aurora {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-100% - var(--gap))); }
+  }
+  @keyframes marquee-vertical {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(-100% - var(--gap))); }
+  }
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes meteor {
+    0% { transform: rotate(var(--angle)) translateX(0); opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: rotate(var(--angle)) translateX(-500px); opacity: 0; }
+  }
+  @keyframes grid-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, 40px); }
+  }
+  @keyframes orbit {
+    0% { transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg)); }
+    100% { transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc((var(--angle) * -1deg) - 360deg)); }
+  }
+  @keyframes shiny-text {
+    0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; }
+    30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; }
+  }
+}
+
+@layer base {
+  :root {
+    --font-sans: var(--font-inter);
+    --font-mono: var(--font-jetbrains-mono);
+  }
+
+  body {
+    background-color: var(--color-os-bg);
+    color: white;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .os-card {
+    background-color: var(--color-os-card);
+    border: 1px solid var(--color-os-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  
+  .os-window {
+    background-color: var(--color-os-card);
+    border: 1px solid var(--color-os-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+  
+  .os-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .os-button-primary {
+    background-color: white;
+    color: black;
+  }
+  
+  .os-button-primary:hover {
+    background-color: var(--color-os-accent-dim);
+  }
+  
+  .os-button-primary:active {
+    transform: scale(0.95);
+  }
+  
+  .os-button-secondary {
+    background-color: var(--color-os-card);
+    border: 1px solid var(--color-os-border);
+    color: white;
+  }
+  
+  .os-button-secondary:hover {
+    background-color: var(--color-os-border);
+    border-color: var(--color-os-border-bright);
+  }
+  
+  .os-button-secondary:active {
+    transform: scale(0.95);
+  }
+  
+  .os-badge {
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--color-os-border);
+    background-color: var(--color-os-bg);
+  }
+}
+
+.os-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.os-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  content: "";
+  opacity: 0.02;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.os-dock {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-os-border);
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+/* ─── Hide scrollbars everywhere (scroll still works) ──────────────────────── */
+html,
+body,
+* {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE / Edge legacy */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Edge, Opera */
+  width: 0;
+  height: 0;
+}

@@ -1,0 +1,120 @@
+version: '3.9'
+
+# ── KROVA Local Dev Stack ─────────────────────────────────────────────────────
+# Runs the full backend locally.
+# Database: Supabase cloud (configured in .env)
+# Redis: local container
+#
+# Usage:
+#   docker compose -f infrastructure/docker/docker-compose.yml up
+#
+# To rebuild after code changes:
+#   docker compose -f infrastructure/docker/docker-compose.yml up --build
+
+x-common: &common
+  env_file: ../../.env
+  restart: unless-stopped
+  networks:
+    - krova
+
+x-worker: &worker
+  <<: *common
+  build:
+    context: ../..
+    dockerfile: infrastructure/docker/Dockerfile.workers
+  depends_on:
+    redis:
+      condition: service_healthy
+
+services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────────────
+
+  redis:
+    image: redis:7-alpine
+    container_name: krova-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - krova
+
+  # ── API ─────────────────────────────────────────────────────────────────────
+
+  api:
+    <<: *common
+    container_name: krova-api
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.api
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ── Migrations (one-shot, exits after running) ───────────────────────────────
+
+  migrate:
+    <<: *common
+    container_name: krova-migrate
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.api
+    command: ["poetry", "run", "alembic", "upgrade", "head"]
+    restart: no
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ── Workers ─────────────────────────────────────────────────────────────────
+
+  worker-messages:
+    <<: *worker
+    container_name: krova-worker-messages
+    environment:
+      WORKER_MODULE: services.workers.message_processor
+
+  worker-email:
+    <<: *worker
+    container_name: krova-worker-email
+    environment:
+      WORKER_MODULE: services.workers.email_processor
+
+  worker-analysis:
+    <<: *worker
+    container_name: krova-worker-analysis
+    environment:
+      WORKER_MODULE: services.workers.analysis_worker
+
+  worker-notifications:
+    <<: *worker
+    container_name: krova-worker-notifications
+    environment:
+      WORKER_MODULE: services.workers.notification_worker
+
+  worker-actions:
+    <<: *worker
+    container_name: krova-worker-actions
+    environment:
+      WORKER_MODULE: services.workers.action_worker
+
+volumes:
+  redis_data:
+
+networks:
+  krova:
+    driver: bridge
