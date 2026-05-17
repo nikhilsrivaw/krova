@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schema.railpack.com/railpack-schema.json",
+  "steps": {
+    "install": {
+      "commands": [
+        "poetry lock --no-update",
+        "poetry install --no-interaction --no-ansi --only main --no-root"
+      ]
+    }
+  }
+}
