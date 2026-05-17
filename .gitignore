@@ -78,3 +78,4 @@ temp/
 # ─── KROVA-specific local-only ─────────────────────────────────────────────
 .scratch/
 .local/
+krova/poetry.lock
