@@ -1,4 +1,0 @@
-[deploy]
-
-[deploy.variables]
-RAILPACK_INSTALL_CMD = "poetry lock --no-update && poetry install --no-interaction --no-ansi --only main --no-root"
