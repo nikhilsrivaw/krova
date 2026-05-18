@@ -3,6 +3,9 @@ KROVA — CORS Configuration
 Controls which origins can call the KROVA API.
 Strict in production — only the dashboard and mobile app origins allowed.
 Permissive in development — localhost on any port works.
+
+Allowed prod origins: krova.space, www.krova.space, app.krova.space.
+Vercel preview URLs (*.vercel.app) also allowed via regex.
 """
 
 from shared.config.settings import settings
