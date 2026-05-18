@@ -326,6 +326,18 @@ export function Navbar() {
               </span>
             </button>
 
+            <a
+              href="https://app.krova.space"
+              target="_blank"
+              rel="noopener"
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-os-border bg-os-card/60 hover:bg-os-border transition-colors"
+            >
+              <Smartphone size={11} className="text-teal-400" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-os-text-dim">
+                Open App
+              </span>
+            </a>
+
             <Link href="/login">
               <motion.button
                 whileHover={{ color: "#FFFFFF" }}
