@@ -22,15 +22,23 @@ ALLOWED_ORIGINS: list[str] = (
     if settings.is_development
     # Production — only the deployed app origins
     else [
-        "https://dashboard.krova.ai",
-        "https://app.krova.ai",
-        "https://krova.ai",
-        "https://www.krova.ai",
+        "https://krova.space",
+        "https://www.krova.space",
+        "https://app.krova.space",
+        # Vercel preview deployments — match any deployment URL on Vercel
+        # so each preview branch can hit the API. Regex is supported by
+        # FastAPI's CORS middleware via the allow_origin_regex option.
     ]
 )
 
+# Regex pattern for Vercel preview deployments (krova-xxxxx-yyyyy.vercel.app)
+# Without this, preview deploys can't call the API.
+ALLOWED_ORIGIN_REGEX = r"https://[a-zA-Z0-9-]+\.vercel\.app"
+
 CORS_CONFIG = {
     "allow_origins": ALLOWED_ORIGINS,
+    # Match Vercel preview/branch URLs in prod so they can call the API too
+    "allow_origin_regex": ALLOWED_ORIGIN_REGEX if not settings.is_development else None,
     # Only the methods our API actually uses
     "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     "allow_headers": [
